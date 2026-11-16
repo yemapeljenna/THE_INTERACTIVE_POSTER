@@ -1,0 +1,517 @@
+/* =========================================================
+   CARTEL INTERACTIVO · 21 DE DICIEMBRE
+   "AQUÍ DEBERÍA HABER UN REGALO" · estilo PAPEL RECORTADO
+   Parte 1: escena de papel · Parte 2: animación sola
+   Parte 3: eventos del ratón · Parte 4: impresión A3
+   ========================================================= */
+
+
+/* ---------- 1. VARIABLES ---------- */
+:root {
+  /* Paleta */
+  --rojo:   #c0392b;   /* rojo navidad */
+  --verde:  #2e6b4a;   /* verde abeto */
+  --dorado: #d9a441;   /* dorado mate */
+  --crema:  #f6eedd;   /* crema */
+  --tinta:  #24324a;   /* azul tinta */
+
+  --crema-claro:  #fbf6ea;
+  --crema-oscuro: #ecdfc4;
+  --sombra:       rgba(90, 65, 40, 0.35);
+
+  /* Tipografías */
+  --fuente-titulo: 'Grandstander', 'Trebuchet MS', system-ui, sans-serif;
+  --fuente-mano:   'Patrick Hand', 'Comic Sans MS', cursive;
+}
+
+
+/* ---------- 2. ESCALADO: 848 × 1200, 1rem = 10 px del diseño ---------- */
+html {
+  font-size: min(calc(100vw / 84.8), calc(100vh / 120));
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #d8cbb0;
+  color: var(--tinta);
+  font-family: var(--fuente-mano);
+}
+
+.defs {
+  position: absolute;
+}
+
+.cartel {
+  position: relative;
+  width: 84.8rem;
+  height: 120rem;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 30%, var(--crema-claro), transparent 75%),
+    var(--crema);
+  box-shadow: 0 1rem 3rem rgba(60, 40, 20, 0.35);
+}
+
+
+/* =========================================================
+   PARTE 1 · ESCENA DE PAPEL
+   ========================================================= */
+
+.escena,
+.marco,
+.primer-plano {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.marco,
+.primer-plano {
+  pointer-events: none;
+}
+.escena * {
+  pointer-events: none;                 /* solo los huecos reciben el ratón */
+}
+
+/* --- Parallax por capas ---
+   main.js pone --px y --py (de -1 a 1) en el cartel; --prof es lo que se mueve
+   cada capa (más profundidad = más cerca = más movimiento). */
+.capa {
+  transform: translate(
+    calc(var(--px, 0) * var(--prof) * -1px),
+    calc(var(--py, 0) * var(--prof) * -0.7px));
+}
+.capa-html {                            /* lo mismo para textos HTML (1 px del diseño = 0.1rem) */
+  translate:
+    calc(var(--px, 0) * var(--prof) * -0.1rem)
+    calc(var(--py, 0) * var(--prof) * -0.07rem);
+}
+
+/* --- Fondo --- */
+.estrellita { fill: var(--dorado); filter: url(#sombra-papel); }
+.puntito    { fill: var(--dorado); opacity: 0.55; }
+.colina--lejos { fill: var(--crema-oscuro); }
+.colina--cerca { fill: #e4d3b2; }
+
+/* --- Árbol de tiras de papel --- */
+.tronco { fill: #8a5a35; }
+.tira__texto {
+  font-family: var(--fuente-mano);
+  fill: var(--crema);
+  text-anchor: middle;
+}
+
+/* Estrella de papel dorado */
+.estrella__brillo {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+/* --- Suelo con los huecos recortados --- */
+.suelo { fill: var(--crema-claro); }
+
+.hueco__zona {
+  fill: transparent;
+  pointer-events: all;                  /* zona sensible al ratón */
+}
+.hueco__vacio {
+  fill: #e2d3b6;                        /* el papel de debajo, en sombra */
+}
+.hueco__corte {                         /* borde del corte, como hecho con cúter */
+  fill: none;
+  stroke: rgba(90, 65, 40, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+/* Regalo de papel: escondido dentro del hueco hasta que se llena */
+.regalo {
+  opacity: 0;
+  transform: translateY(16px);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.5, 1), opacity 0.3s ease;
+}
+
+/* Etiqueta con el deseo */
+.etiqueta { opacity: 0; transition: opacity 0.3s ease 0.2s; }
+.etiqueta__hilo {
+  fill: none;
+  stroke: var(--tinta);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.etiqueta__cuerpo { transform: rotate(var(--ang)); }
+.etiqueta__papel {
+  fill: var(--crema-claro);
+  stroke: rgba(90, 65, 40, 0.3);
+  stroke-width: 0.8;
+}
+.etiqueta__agujero { fill: var(--dorado); }
+.etiqueta__texto {
+  font-family: var(--fuente-mano);
+  font-size: 17px;
+  fill: var(--tinta);
+  text-anchor: middle;
+}
+
+/* --- Guirnalda de bombillitas de papel --- */
+.marco__cable {
+  fill: none;
+  stroke: var(--tinta);
+  stroke-width: 1.6;
+  opacity: 0.8;
+}
+.bombilla__casquillo { fill: var(--tinta); }
+.bombilla__cuerpo {
+  stroke: rgba(60, 40, 20, 0.25);
+  stroke-width: 0.6;
+  transition: fill 0.6s ease;
+}
+.bombilla__brillo {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.bombilla[data-c="r"] .bombilla__cuerpo { fill: var(--rojo); }
+.bombilla[data-c="g"] .bombilla__cuerpo { fill: var(--verde); }
+.bombilla[data-c="o"] .bombilla__cuerpo { fill: var(--dorado); }
+.bombilla[data-c="c"] .bombilla__cuerpo { fill: var(--crema-claro); }
+.bombilla[data-c="r"] .bombilla__luz { fill: url(#luz-r); }
+.bombilla[data-c="g"] .bombilla__luz { fill: url(#luz-g); }
+.bombilla[data-c="o"] .bombilla__luz { fill: url(#luz-o); }
+.bombilla[data-c="c"] .bombilla__luz { fill: url(#luz-c); }
+.bombilla__luz {
+  opacity: 0;                           /* apagadas: papel de color; se encienden al final */
+  transition: opacity 0.8s ease;
+}
+
+/* --- Primer plano --- */
+.acebo__nervio {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 1;
+}
+.nieve { fill: #fffdf7; }
+.copo__trazo {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.copo__punto { fill: #ffffff; }
+
+/* --- Textura de papel sutil (SVG de ruido, no canvas) --- */
+.textura {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.36 0 0 0 0 0.25 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size: 26rem 26rem;
+}
+
+/* --- Textos --- */
+.presentan,
+.titulo,
+.aqui,
+.mensaje {
+  position: absolute;
+  left: 5rem;
+  right: 5rem;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.presentan {
+  top: 4.8rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  opacity: 0.8;
+}
+
+/* Título: letras de papel rojo sobre una capa dorada desplazada */
+.titulo {
+  top: 7.4rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 8.4rem;
+  line-height: 1;
+  color: var(--rojo);
+  text-shadow:
+    0.3rem 0.3rem 0 var(--dorado),
+    0.5rem 0.7rem 0.9rem rgba(90, 65, 40, 0.35);
+}
+
+.aqui {
+  top: 89rem;
+  font-family: var(--fuente-mano);
+  font-size: 3.2rem;
+  color: var(--tinta);
+  transition: opacity 0.6s ease;
+}
+
+/* El mensaje final ocupa el mismo sitio: sustituye a la frase, no aparece a la vez */
+.mensaje {
+  top: 88.2rem;
+  opacity: 0;
+  visibility: hidden;
+}
+.mensaje__linea {
+  display: block;
+  font-family: var(--fuente-mano);
+  font-size: 3.1rem;
+  line-height: 1.2;
+  color: var(--tinta);
+}
+.mensaje__firma {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 5.6rem;
+  line-height: 1.05;
+  color: var(--rojo);
+  text-shadow:
+    0.25rem 0.25rem 0 var(--dorado),
+    0.4rem 0.6rem 0.8rem rgba(90, 65, 40, 0.3);
+}
+
+/* --- Créditos: fuera del parallax y por encima de todo --- */
+.creditos {
+  position: absolute;
+  z-index: 5;
+  left: 7rem;
+  right: 7rem;
+  bottom: 4.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  border-top: 0.1rem solid rgba(36, 50, 74, 0.3);
+  padding-top: 1.3rem;
+  pointer-events: none;
+}
+.creditos__texto {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+.creditos__texto small {
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+.creditos__logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rem;
+}
+/* Logos en CAJAS IDÉNTICAS: 200 × 70 px del diseño (20rem × 7rem).
+   object-fit: contain mete cada logo entero sin deformarlo.
+   El filtro #tinta los pasa a los dos a azul tinta para que se vean igual
+   de bien sobre el crema. Sin animaciones ni efectos del ratón. */
+.logo {
+  display: block;
+  width: 20rem;
+  height: 7rem;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+  filter: url(#tinta);
+  animation: none;
+  transition: none;
+}
+
+
+/* =========================================================
+   PARTE 2 · ANIMACIÓN SOLA
+   ========================================================= */
+
+/* Al cargar: el título cae como un recorte de papel y las tiras se apilan */
+.titulo {
+  animation: caer-papel 1s cubic-bezier(0.3, 1.4, 0.5, 1) 0.2s backwards;
+}
+@keyframes caer-papel {
+  from { opacity: 0; transform: translateY(-3rem) rotate(-2deg); }
+}
+.tira {
+  animation: apilar 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+  animation-delay: calc(1.2s + var(--i) * 90ms);
+}
+@keyframes apilar {
+  from { opacity: 0; translate: 0 -40px; }
+}
+.estrella__giro {
+  animation: aparecer-estrella 0.8s cubic-bezier(0.3, 1.6, 0.5, 1) 3.6s backwards;
+}
+@keyframes aparecer-estrella {
+  from { opacity: 0; transform: scale(0) rotate(-90deg); }
+}
+
+/* Copos de papel blanco cayendo despacio */
+.copo {
+  animation: nevar 22s linear infinite;
+}
+@keyframes nevar {
+  from { transform: translateY(calc(-1 * var(--y) - 30px)); }
+  to   { transform: translateY(calc(1230px - var(--y))); }
+}
+.copo__giro {
+  animation: girar-copo 7s ease-in-out infinite alternate;
+}
+@keyframes girar-copo {
+  from { transform: rotate(-30deg) translateX(-6px); }
+  to   { transform: rotate(30deg) translateX(6px); }
+}
+
+
+/* =========================================================
+   PARTE 3 · EVENTOS
+   ========================================================= */
+
+/* mouseenter: el regalo sube del hueco con rebote y muestra su etiqueta */
+.hueco.lleno .regalo {
+  opacity: 1;
+  transform: translateY(-3px);          /* mouseleave: baja un poco, pero se queda */
+}
+.hueco.activo .regalo {
+  transform: translateY(-12px);
+}
+.hueco.rebote .regalo {
+  animation: rebote 0.8s cubic-bezier(0.3, 0.8, 0.4, 1);
+}
+@keyframes rebote {
+  0%   { opacity: 0; transform: translateY(18px) scale(1.06, 0.9); }
+  45%  { opacity: 1; transform: translateY(-20px) scale(0.96, 1.05); }
+  70%  { transform: translateY(-8px) scale(1.03, 0.97); }
+  100% { transform: translateY(-12px) scale(1); }
+}
+.hueco.lleno .etiqueta { opacity: 1; }
+.hueco.rebote .etiqueta__cuerpo {
+  animation: balanceo-etiqueta 1.4s ease-out 0.3s;
+}
+@keyframes balanceo-etiqueta {
+  0%   { transform: rotate(calc(var(--ang) + 30deg)); }
+  35%  { transform: rotate(calc(var(--ang) - 14deg)); }
+  65%  { transform: rotate(calc(var(--ang) + 6deg)); }
+  100% { transform: rotate(var(--ang)); }
+}
+
+/* --- Estado final: los 7 regalos llenos --- */
+.completo .estrella__giro {
+  animation: girar-estrella 6s linear infinite;
+}
+@keyframes girar-estrella {
+  to { transform: rotate(360deg); }
+}
+.completo .estrella__brillo {
+  opacity: 1;
+  animation: latir 2.4s ease-in-out infinite alternate;
+}
+@keyframes latir {
+  from { transform: scale(0.85); }
+  to   { transform: scale(1.15); }
+}
+.completo .bombilla__luz { opacity: 1; }   /* todas las bombillitas se encienden juntas */
+
+.completo .aqui { opacity: 0; }
+.completo .mensaje {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.8s ease 0.7s;   /* entra cuando la frase ya se ha ido */
+}
+.completo .mensaje__firma {
+  animation: caer-papel 1s cubic-bezier(0.3, 1.4, 0.5, 1) 1.5s backwards;
+}
+
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .titulo, .tira, .estrella__giro, .copo, .copo__giro,
+  .hueco.rebote .regalo, .hueco.rebote .etiqueta__cuerpo,
+  .completo .estrella__giro, .completo .estrella__brillo,
+  .completo .mensaje__firma { animation: none; }
+}
+
+
+/* =========================================================
+   PARTE 4 · VERSIÓN IMPRIMIBLE (A3 vertical, estado final)
+   Todo es SVG/HTML: sale nítido. Sin efectos del ratón.
+   ========================================================= */
+@media print {
+  @page {
+    size: A3 portrait;
+    margin: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;          /* imprime los colores de fondo */
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* El cartel (848 × 1200) ocupa la página entera: 420 mm / 120 rem */
+  html {
+    font-size: calc(420mm / 120);
+  }
+  html,
+  body {
+    width: 297mm;
+    height: 420mm;
+    min-height: 0;
+    overflow: hidden;
+  }
+  body {
+    display: block;
+    background: var(--crema);
+  }
+  .cartel {
+    margin: 0 auto;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  /* Sin parallax (efecto del ratón) */
+  .capa      { transform: none !important; }
+  .capa-html { translate: none !important; }
+
+  /* Regalos llenos con su etiqueta */
+  .regalo {
+    opacity: 1 !important;
+    transform: translateY(-3px) !important;
+  }
+  .etiqueta { opacity: 1 !important; }
+
+  /* Estrella brillando y bombillitas encendidas */
+  .estrella__brillo { opacity: 1 !important; }
+  .bombilla__luz    { opacity: 1 !important; }
+
+  /* Mensaje final en lugar de "Aquí debería haber un regalo." */
+  .aqui { display: none; }
+  .mensaje {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
