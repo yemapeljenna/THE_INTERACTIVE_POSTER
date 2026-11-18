@@ -1,0 +1,25 @@
+# Editor y sistema
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependencias
+node_modules/
+
+# Modelos 3D antiguos (ya no se usan)
+MODELOS/
+
+# Archivos temporales y de pruebas
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*~
+*.log
+tmp/
+temp/
+pruebas/
+prueba*
+test*
