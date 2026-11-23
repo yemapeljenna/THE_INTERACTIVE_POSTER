@@ -34,7 +34,7 @@ body {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #3e0a13;
+  background: #070b1e;
   color: var(--texto);
   font-family: var(--fuente-titulo);
 }
@@ -49,10 +49,9 @@ body {
   width: 84.8rem;
   height: 120rem;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 85% 65% at 50% 45%, transparent 45%, rgba(40, 4, 12, 0.45)),
-    repeating-conic-gradient(var(--cuadro) 0 25%, var(--fondo) 0 50%) 0 0 / 10.6rem 10.6rem;
-  background-color: var(--fondo);
+  /* cielo nocturno: azul noche arriba, violeta en el horizonte */
+  background: linear-gradient(180deg, #0b1230 0%, #141a3e 35%, #221a48 60%, #2a1a4a 74%);
+  background-color: #0b1230;
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
 }
 
@@ -86,31 +85,88 @@ body {
   pointer-events: none;
 }
 .presentan {
-  top: 4.6rem;
-  font-weight: 400;
-  font-size: 1.3rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.85;
+  top: 3.6rem;
+  left: 2rem;
+  right: 2rem;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
+  font-weight: 500;
+  font-size: 1.9rem;                    /* 19 px del diseño */
+  line-height: 1.2;
+  letter-spacing: normal;
+  white-space: nowrap;
+  color: var(--plata);
+  text-shadow: 0.2rem 0.2rem 0 rgba(60, 6, 16, 0.6);
 }
 .titulo {
-  top: 7.2rem;
+  top: 6.6rem;
+  left: 2rem;
+  right: 2rem;
   font-weight: 400;
   font-optical-sizing: auto;
   font-variation-settings: 'opsz' 144;
-  font-size: 9.2rem;
+  font-size: 13.4rem;                   /* unos 760 px de ancho */
   line-height: 1;
   letter-spacing: -0.015em;
   text-shadow: 0 0.4rem 0 rgba(60, 6, 16, 0.55);   /* sombra dura, de bloque */
 }
-.eslogan {
-  top: 18.4rem;
-  font-style: italic;
-  font-weight: 400;
-  font-size: 3.8rem;
-  line-height: 1.1;
-  text-shadow: 0 0.3rem 0 rgba(60, 6, 16, 0.5);
+.eslogan {                              /* sobre una cinta roja de regalo, en pixel */
+  z-index: 4;                           /* por debajo del lienzo 3D: el gorro, al levantarse, pasa por delante
+                                           (la nieve y las chispitas se recortan en la cinta: siguen detrás) */
+  top: 19.6rem;                         /* cerca del título, con aire hasta la chimenea */
+  left: 2rem;
+  right: 2rem;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 3.4rem;
+  line-height: 1;
 }
+.cinta {                                /* más fina, igual de ancha */
+  position: relative;
+  display: inline-block;
+  padding: 0.5rem 6.6rem 0.6rem;
+  background: #c0283a;
+  box-shadow: 0 0.5rem 0 #8a1c2e;       /* canto de la cinta, en bloque */
+  color: var(--crema);
+  text-shadow: 0.25rem 0.25rem 0 #8a1c2e;
+}
+.cinta::before,                         /* extremos en cola de golondrina, un poco más abajo (cinta doblada) */
+.cinta::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0.8rem;
+  width: 5.6rem;
+  height: 100%;
+  background: #a8222f;
+  box-shadow: 0 0.5rem 0 #8a1c2e;
+}
+.cinta::before {
+  left: -4.4rem;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 calc(100% - 0.6rem), 1.2rem calc(100% - 0.6rem),
+                     1.2rem calc(50% + 0.6rem), 1.8rem calc(50% + 0.6rem), 1.8rem calc(50% - 0.6rem),
+                     1.2rem calc(50% - 0.6rem), 1.2rem 0.6rem, 0 0.6rem);
+}
+.cinta::after {
+  right: -4.4rem;
+  clip-path: polygon(0 0, 100% 0, 100% 0.6rem, calc(100% - 1.2rem) 0.6rem, calc(100% - 1.2rem) calc(50% - 0.6rem),
+                     calc(100% - 1.8rem) calc(50% - 0.6rem), calc(100% - 1.8rem) calc(50% + 0.6rem),
+                     calc(100% - 1.2rem) calc(50% + 0.6rem), calc(100% - 1.2rem) calc(100% - 0.6rem),
+                     100% calc(100% - 0.6rem), 100% 100%, 0 100%);
+}
+
+/* Glaseado sobre "21 de diciembre": copia del texto, en blanco, a la que el filtro deja solo
+   la parte de arriba de cada letra con sus gotitas */
+.titulo::after {
+  content: attr(data-texto);
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  text-shadow: none;
+  filter: url(#glaseado-titulo);
+  pointer-events: none;
+}
+
 
 /* --- Estrellitas del fondo y suelo de nieve: SVG que dibuja main.js ---
    (nieve #fff8ef, borde en bloques, sombras azuladas, montoncitos y caminito) */
@@ -122,30 +178,95 @@ body {
   height: 100%;
   pointer-events: none;
 }
+.cielo {                                /* aurora boreal y estrella fugaz (main.js), en píxeles grandes */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.colinas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;                           /* delante de las estrellas, detrás de la nieve y la casa */
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 .estrellas { z-index: 1; }              /* detrás de todo */
+.estrella {                             /* titilan suavemente, cada una a su ritmo */
+  opacity: var(--o);
+  animation: titilar-estrella 4s ease-in-out infinite;
+}
+.nube {                                 /* nubes de bloques: van y vienen muy despacio */
+  animation: nube-vaiven 50s ease-in-out infinite alternate;
+}
+@keyframes nube-vaiven {
+  from { transform: translateX(calc(var(--viaje) * -1)); }
+  to   { transform: translateX(var(--viaje)); }
+}
+@keyframes titilar-estrella {
+  0%, 100% { opacity: var(--o); }
+  50%      { opacity: calc(var(--o) * 0.3); }
+}
 .suelo     { z-index: 3; }              /* detrás de la casa (canvas) */
 
-/* Mensaje final (con las 4 ventanas encendidas): sobre una placa vino, en la nieve */
+/* Mensaje final (con las 4 ventanas encendidas): recuadro de píxel rojo con borde escalonado y nieve encima,
+   en la nieve, centrado entre los dos carteles. El recuadro se dibuja con ::before (borde #8a1c2e) y
+   ::after (rojo #c0283a), los dos con las esquinas recortadas en escalones, y el canto con drop-shadow. */
 .final {
   z-index: 6;                           /* por encima de la nieve que cae */
-  top: 98rem;
+  isolation: isolate;
+  top: 99.6rem;
   left: 26rem;
   right: 26rem;
-  padding: 1.6rem 1.8rem 1.8rem;
-  background: var(--fondo);
-  box-shadow: 0 0.6rem 0 #4a0c17;       /* canto de bloque */
-  font-weight: 400;
-  font-size: 2.2rem;
-  line-height: 1.25;
+  padding: 1.7rem 1.8rem 1.9rem;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
+  font-weight: 500;
+  font-size: 2rem;
+  line-height: 1.3;
+  color: #f7efe4;
+  text-shadow: 0.2rem 0.2rem 0 #4a0d18;
+  filter: drop-shadow(0 0.6rem 0 #4a0d18);   /* canto de bloque */
   opacity: 0;
   visibility: hidden;
 }
-.final span {
+.final::before,
+.final::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(0.8rem 0, calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
+                     calc(100% - 0.4rem) 0.8rem, 100% 0.8rem, 100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
+                     calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem), calc(100% - 0.8rem) 100%,
+                     0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.8rem),
+                     0 calc(100% - 0.8rem), 0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem);
+}
+.final::before {                        /* borde escalonado */
+  inset: 0;
+  background: #8a1c2e;
+}
+.final::after {                         /* fondo rojo, como la cinta del eslogan */
+  inset: 0.4rem;
+  background: #c0283a;
+}
+.final .nieve-tapa {                    /* un poco de nieve encima */
+  left: 0.8rem;
+  right: 0.8rem;
+  top: -0.6rem;
+}
+.final .final__si {
   display: block;
-  margin-top: 0.5rem;
-  font-style: italic;
-  font-size: 1.45em;
-  color: var(--luz);
+  margin-top: 0.6rem;
+  font-size: 3.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #e8b84a;
+  text-shadow: 0.3rem 0.3rem 0 #4a0d18;
 }
 
 
@@ -161,40 +282,68 @@ body {
   pointer-events: none;
 }
 
-/* --- Cartelito de galleta clavado con un palito (izquierda) --- */
+/* --- Madera pixelada y nieve: main.js genera las texturas (SVG de píxeles, nítido al imprimir) ---
+   Vetas horizontales en #8b5a2b, #a0703a y #6e4520; cada píxel son 4 px del diseño. */
+[data-madera] {
+  background-color: #a0703a;
+  background-repeat: repeat;
+}
+.nieve-tapa {                           /* capa de nieve en bloques encima de un cartel o de la viga */
+  position: absolute;
+  z-index: 3;
+  left: -0.4rem;
+  right: -0.4rem;
+  top: -0.8rem;
+  height: 1.6rem;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+
+/* --- Cartel de madera con los logos, clavado en la nieve (izquierda) --- */
 .cartelito {
   position: absolute;
   left: 2.6rem;
   top: 92.6rem;
   width: 21rem;
 }
-.cartelito__canto {                     /* canto de galleta y contorno (drop-shadow no lo recorta el clip-path) */
+.cartelito__canto {
   position: relative;
   z-index: 1;
-  filter:
-    drop-shadow(0 0.6rem 0 var(--sombra))
-    drop-shadow(0 0 0.1rem rgba(110, 20, 35, 0.45));
+  filter: drop-shadow(0 0.5rem 0 rgba(58, 34, 14, 0.55));   /* canto del tablón */
 }
 .cartelito__tabla {
+  position: relative;
+  padding: 1.2rem;
+  box-shadow: inset 0 0 0 0.4rem #5a3618, inset 0 -0.8rem 0 rgba(58, 34, 14, 0.35);   /* borde oscuro de bloque */
+}
+.cartelito__hoja {                      /* hoja blanca clavada al tablón */
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.2rem;
-  background: var(--galleta);
-  border: 0.8rem solid var(--glaseado);
-  /* esquinas recortadas en escalón, como bloques */
-  clip-path: polygon(0.8rem 0, calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.8rem, 100% 0.8rem,
-                     100% calc(100% - 0.2rem), calc(100% - 0.8rem) calc(100% - 0.2rem), calc(100% - 0.8rem) 100%,
-                     0.8rem 100%, 0.8rem calc(100% - 0.2rem), 0 calc(100% - 0.2rem), 0 0.8rem, 0.8rem 0.8rem);
+  gap: 0.6rem;
+  padding: 1rem 0.8rem;
+  background: #ffffff;
+  box-shadow: 0.3rem 0.3rem 0 rgba(58, 34, 14, 0.45);
 }
+.clavo {                                /* clavitos grises de píxel en las esquinas de la hoja */
+  position: absolute;
+  width: 0.6rem;
+  height: 0.6rem;
+  background: #7d818b;
+  box-shadow: inset 0.2rem 0.2rem 0 #b9bdc5, inset -0.2rem -0.2rem 0 #565a63;
+}
+.clavo--1 { left: 0.3rem; top: 0.3rem; }
+.clavo--2 { right: 0.3rem; top: 0.3rem; }
+.clavo--3 { left: 0.3rem; bottom: 0.3rem; }
+.clavo--4 { right: 0.3rem; bottom: 0.3rem; }
 /* Logos en CONTENEDORES IDÉNTICOS: misma caja, object-fit: contain, sin deformar.
    El filtro #tinta los deja a los dos en el mismo azul tinta. */
 .cartelito__logo {
   width: 100%;
   height: 6.4rem;
   box-sizing: border-box;
-  padding: 0.6rem 1rem;
-  background: var(--glaseado);
+  padding: 0.4rem 1rem;
+  background: #ffffff;
 }
 .cartelito__logo img {
   display: block;
@@ -206,87 +355,90 @@ body {
   animation: none;
   transition: none;
 }
-.cartelito__palito {
-  width: 1.6rem;
-  height: 2.4rem;                       /* corto: deja sitio a los créditos */
-  margin: -0.2rem auto 0;
-  background: linear-gradient(90deg, var(--galleta) 50%, var(--sombra) 50%);
+.cartelito__palito {                    /* poste de madera clavado en la nieve */
+  width: 2rem;
+  height: 2.4rem;
+  margin: 0 auto;
+  box-shadow: inset -0.8rem 0 0 rgba(58, 34, 14, 0.35);
 }
-.cartelito__creditos {
-  margin: 0.4rem 0 0;
-  width: max-content;                   /* dos líneas enteras, sin cortes */
+.cartelito__creditos {               /* líneas centradas, de todo el ancho del cartel con sus bombillitas */
+  margin: 0.2rem -0.9rem 0;
+  box-sizing: border-box;
+  padding: 0.5rem 0.4rem 0.6rem;
+  background: rgba(255, 248, 239, 0.95);
+  box-shadow: 0 0.3rem 0 rgba(150, 170, 200, 0.35);
+  text-align: center;
   white-space: nowrap;
-  text-align: left;
-  font-size: 1.5rem;                    /* 15 px: legible impreso */
-  font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: 0.01em;
+  line-height: 1.3;
+  letter-spacing: 0;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
   color: var(--fondo);
 }
 .cartelito__creditos span {
   display: block;
 }
-.cartelito__creditos small {
-  font-size: 0.9em;
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: 0;
+.cartelito__creditos .linea1 {
+  font-size: 1.6rem;                    /* 16 px */
+  font-weight: 600;
+}
+.cartelito__creditos .linea2 {
+  font-size: 1.3rem;                    /* 13 px: unos 13 pt impreso en A3 */
+  font-weight: 500;
 }
 
-/* --- Etiqueta de regalo colgada de una cinta morada (derecha) --- */
+/* --- Cartel colgante de madera con el QR (derecha): viga sobre un poste y dos cadenas --- */
 .etiqueta {
   position: absolute;
   right: 3rem;
   top: 87.4rem;
   width: 19.6rem;
-  filter:                               /* canto y contorno de la tarjeta (el clip-path recorta box-shadow) */
-    drop-shadow(0 0.5rem 0 #d9c6ab)
-    drop-shadow(0 0 0.1rem rgba(110, 20, 35, 0.45));
+  filter: drop-shadow(0 0.4rem 0 rgba(58, 34, 14, 0.45));
 }
-.etiqueta__palito {                     /* palito clavado en la nieve del que cuelga */
+.etiqueta__poste {                      /* poste clavado en la nieve, detrás del cartel */
   position: absolute;
   left: 50%;
-  top: 1.2rem;
-  width: 1.6rem;
-  height: 28rem;
-  margin-left: -0.8rem;
-  background: linear-gradient(90deg, var(--galleta) 50%, var(--sombra) 50%);
+  top: 0.4rem;
+  width: 2rem;
+  height: 29rem;
+  margin-left: -1rem;
+  box-shadow: inset -0.8rem 0 0 rgba(58, 34, 14, 0.35);
 }
-.etiqueta__lazo {
+.etiqueta__viga {                       /* viga de la que cuelgan las cadenas */
   position: relative;
   z-index: 1;
-  display: block;
-  width: 6.6rem;
-  height: 4.8rem;
-  margin: 0 auto -0.4rem;
+  height: 1.6rem;
+  margin: 0 -0.8rem;
+  box-shadow: inset 0 0 0 0.4rem #5a3618;
 }
-.etiqueta__cuerpo {                     /* tarjeta + bombillitas, ladeadas juntas */
+.etiqueta__cadenas {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  height: 2.7rem;
+  padding: 0 2.2rem;
+}
+.cadena {                               /* eslabones grises en píxel (textura de main.js) */
+  width: 1.2rem;
+  height: 100%;
+  background-repeat: repeat-y;
+}
+.etiqueta__cuerpo {                     /* cartel + bombillitas */
   position: relative;
   z-index: 2;
-  transform: rotate(2.5deg);
-  transform-origin: 50% 0;
 }
 .etiqueta__tarjeta {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.6rem 1.4rem 1.4rem;
-  background: var(--crema);
-  /* forma de etiqueta: esquinas de arriba cortadas en escalones */
-  clip-path: polygon(3.2rem 0, calc(100% - 3.2rem) 0, calc(100% - 3.2rem) 1rem, calc(100% - 1.6rem) 1rem,
-                     calc(100% - 1.6rem) 2rem, 100% 2rem, 100% 100%, 0 100%, 0 2rem, 1.6rem 2rem,
-                     1.6rem 1rem, 3.2rem 1rem);
+  padding: 1.6rem 1.2rem 1.2rem;
+  box-shadow: inset 0 0 0 0.4rem #5a3618, inset 0 -0.8rem 0 rgba(58, 34, 14, 0.35);
 }
-.etiqueta__agujero {                    /* ojal por donde pasa la cinta */
-  position: absolute;
-  top: 0.8rem;
-  left: 50%;
-  width: 1.2rem;
-  height: 1.2rem;
-  margin-left: -0.6rem;
-  background: #7b4fa0;
-  box-shadow: 0 0 0 0.3rem #e3d3bd;
+.etiqueta__marco-qr {                   /* el QR sobre blanco, con un marco oscuro */
+  padding: 0.4rem;
+  background: #ffffff;
+  box-shadow: 0 0 0 0.3rem #5a3618;
 }
 .etiqueta__qr {
   display: block;
@@ -294,13 +446,14 @@ body {
   height: 15rem;
 }
 .etiqueta__texto {
-  margin: 0.8rem 0 0;
+  margin: 1rem 0 0;
   text-align: center;
-  font-size: 1.45rem;
-  font-weight: 500;
-  font-style: italic;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 600;
   line-height: 1.25;
-  color: var(--fondo);
+  color: #fff1dc;                       /* crema sobre la madera */
+  text-shadow: 0.2rem 0.2rem 0 #4a2a10;
 }
 
 /* --- Bombillitas alrededor del cartelito y de la etiqueta ---
@@ -313,7 +466,7 @@ body {
   pointer-events: none;
 }
 .guirnalda[data-arriba="no"] {
-  top: 1.2rem;
+  top: 0.4rem;
   border-top: 0;
 }
 .bombilla {
@@ -372,15 +525,15 @@ body {
   .bombilla { transition: none; }
 }
 
-/* Cursor: manga pastelera en pixel art (44 × 44 px del diseño).
+/* Cursor: manga pastelera en pixel art (64 × 64 px del diseño).
    main.js la mueve con transform para que la punta de la boquilla quede en el ratón. */
 .manga {
   position: absolute;
   z-index: 20;
   left: 0;
   top: 0;
-  width: 4.4rem;
-  height: 4.4rem;
+  width: 6.4rem;
+  height: 6.4rem;
   pointer-events: none;
   visibility: hidden;
   filter: drop-shadow(0.15rem 0.25rem 0 rgba(60, 6, 16, 0.35));
@@ -394,6 +547,35 @@ body {
   height: 100%;
 }
 
+/* Pista inicial: desaparece al primer movimiento del ratón */
+.pista {                                /* dos líneas centradas entre los dos carteles, bajo el caminito */
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 108.4rem;
+  margin: 0;
+  padding: 0.7rem 1.2rem 0.8rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  text-align: center;
+  background: rgba(110, 20, 35, 0.9);
+  box-shadow: 0 0.3rem 0 #4a0c17;
+  font-family: 'Pixelify Sans', 'Courier New', monospace;
+  font-size: 1.8rem;                    /* 18 px */
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--texto);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.pista span {
+  display: block;
+}
+.pista.oculta {
+  opacity: 0;
+  transform: translate(-50%, 0.8rem);
+}
+
 /* Brillitos que titilan en la nieve (SVG que dibuja main.js) */
 .brillito {
   opacity: 0;
@@ -405,4 +587,62 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .brillito { animation: none; opacity: 0.6; }
+  .estrella { animation: none; }
+  .nube { animation: none; }
+}
+
+/* =========================================================
+   IMPRESIÓN: el cartel ocupa un A3 vertical
+   ========================================================= */
+@page {
+  size: A3 portrait;
+  margin: 0;
+}
+@media print {
+  html { font-size: calc(420mm / 120); }   /* 3,5 mm: el cartel mide 296,8 × 420 mm, cabe en una sola hoja */
+  html, body { height: 420mm; overflow: hidden; }
+  body {
+    display: block;
+    min-height: 0;
+    background: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cartel { box-shadow: none; }
+  *, *::before, *::after {              /* colores exactos y nada animado: la aurora y las estrellas, fijas */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    animation: none !important;
+    transition: none !important;
+  }
+  .manga,
+  .pista { display: none; }
+}
+
+/* =========================================================
+   ESTADO FINAL TODO ILUMINADO (también en la captura y al imprimir)
+   ========================================================= */
+.resplandor {                           /* resplandor cálido suave alrededor de la casa, por detrás */
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  top: 28rem;
+  height: 70rem;
+  background: radial-gradient(ellipse 44% 46% at 50% 52%, rgba(255, 200, 112, 0.34), rgba(255, 170, 80, 0.12) 55%, rgba(255, 170, 80, 0) 75%);
+  opacity: 0;
+  transition: opacity 2s ease;
+  pointer-events: none;
+}
+.completo .resplandor { opacity: 1; }
+.titulo,
+.cinta { transition: text-shadow 1.5s ease, box-shadow 1.5s ease; }
+.completo .titulo {                     /* leve brillo dorado */
+  text-shadow: 0 0.4rem 0 rgba(60, 6, 16, 0.55), 0 0 1.8rem rgba(255, 210, 122, 0.45);
+}
+.completo .cinta {
+  box-shadow: 0 0.5rem 0 #8a1c2e, 0 0 2.2rem rgba(255, 190, 100, 0.5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .resplandor, .titulo, .cinta { transition: none; }
 }

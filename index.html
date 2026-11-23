@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="CSS/style.css">
 
@@ -23,6 +23,40 @@
       <filter id="tinta" color-interpolation-filters="sRGB">
         <feColorMatrix type="matrix" values="0 0 0 0 0.141  0 0 0 0 0.196  0 0 0 0 0.290  0 0 0 1 0"/>
       </filter>
+
+      <!-- Glaseado del título: capa blanca en la parte de arriba de cada letra, con gotitas de largos distintos.
+           Se calcula con la propia forma de las letras: «letra menos letra desplazada hacia abajo» = su borde de arriba. -->
+      <filter id="glaseado-titulo" primitiveUnits="objectBoundingBox" x="-0.02" y="-0.15" width="1.04" height="1.4" color-interpolation-filters="sRGB">
+        <feOffset in="SourceAlpha" dy="0.1" result="b0"/>
+        <feComposite in="SourceAlpha" in2="b0" operator="out" result="capa"/>
+        <feOffset in="SourceAlpha" dy="0.17" result="b1"/>
+        <feComposite in="SourceAlpha" in2="b1" operator="out" result="banda1"/>
+        <feImage href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%229.2%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2221.5%22%20y%3D%220%22%20width%3D%220.7%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2233.0%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2247.6%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2258.8%22%20y%3D%220%22%20width%3D%220.7%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2270.3%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2284.1%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3C/svg%3E" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="r1"/>
+        <feComposite in="banda1" in2="r1" operator="in" result="g1"/>
+        <feOffset in="SourceAlpha" dy="0.27" result="b2"/>
+        <feComposite in="SourceAlpha" in2="b2" operator="out" result="banda2"/>
+        <feImage href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%2214.6%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2227.8%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2241.2%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2263.9%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2277.5%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2290.2%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3C/svg%3E" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="r2"/>
+        <feComposite in="banda2" in2="r2" operator="in" result="g2"/>
+        <feOffset in="SourceAlpha" dy="0.4" result="b3"/>
+        <feComposite in="SourceAlpha" in2="b3" operator="out" result="banda3"/>
+        <feImage href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%2218.3%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2237.4%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2252.7%22%20y%3D%220%22%20width%3D%220.8%22%20height%3D%2210%22/%3E%3Crect%20x%3D%2274.0%22%20y%3D%220%22%20width%3D%220.9%22%20height%3D%2210%22/%3E%3C/svg%3E" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="r3"/>
+        <feComposite in="banda3" in2="r3" operator="in" result="g3"/>
+        <feMerge result="todo"><feMergeNode in="capa"/><feMergeNode in="g1"/><feMergeNode in="g2"/><feMergeNode in="g3"/></feMerge>
+        <!-- bordes y puntas de las gotas redondeados -->
+        <feGaussianBlur in="todo" stdDeviation="0.0022 0.014" result="borroso"/>
+        <feComponentTransfer in="borroso" result="redondo"><feFuncA type="table" tableValues="0 0 1 1"/></feComponentTransfer>
+        <!-- un poco más gordo que la letra: asoma por encima (capa gruesa) -->
+        <feMorphology in="redondo" operator="dilate" radius="0.0018 0.012" result="gordo"/>
+        <feOffset in="gordo" dy="-0.018" result="glaseado"/>
+        <!-- sombra azulada bajo el glaseado, sobre la letra -->
+        <feOffset in="glaseado" dy="0.04" result="bajo"/>
+        <feComposite in="bajo" in2="SourceAlpha" operator="in" result="bajoLetra"/>
+        <feFlood flood-color="#dfe6ef" result="azul"/>
+        <feComposite in="azul" in2="bajoLetra" operator="in" result="sombra"/>
+        <feFlood flood-color="#ffffff" result="blanco"/>
+        <feComposite in="blanco" in2="glaseado" operator="in" result="glaseadoBlanco"/>
+        <feMerge><feMergeNode in="sombra"/><feMergeNode in="glaseadoBlanco"/></feMerge>
+      </filter>
     </defs>
   </svg>
 
@@ -30,62 +64,67 @@
   <main class="cartel" id="cartel">
 
     <!-- ===== TEXTOS ===== -->
-    <p class="presentan">Associació Educativa Ítaca y PlanetaFP presentan</p>
-    <h1 class="titulo">21 de diciembre</h1>
-    <p class="eslogan">Que en cada casa haya un regalo</p>
+    <p class="presentan">Asociación Educativa Ítaca y PlanetaFP presentan</p>
+    <h1 class="titulo" data-texto="21 de diciembre">21 de diciembre</h1>
+    <p class="eslogan"><span class="cinta">Que en cada casa haya un regalo</span></p>
 
     <!-- ===== ESTRELLITAS DEL FONDO (main.js las dibuja) ===== -->
+    <canvas class="cielo" id="cielo" aria-hidden="true"></canvas>
     <svg class="estrellas" id="estrellas" viewBox="0 0 848 1200" aria-hidden="true" shape-rendering="crispEdges"></svg>
 
-    <!-- ===== SUELO DE NIEVE: borde en bloques, sombras azuladas, montoncitos y caminito (main.js) ===== -->
-    <svg class="suelo" id="suelo" viewBox="0 0 848 1200" aria-hidden="true" shape-rendering="crispEdges"></svg>
+    <!-- ===== COLINAS Y PINOS VÓXEL AL FONDO (main.js) ===== -->
+    <svg class="colinas" id="colinas" viewBox="0 0 848 1200" aria-hidden="true" shape-rendering="crispEdges"></svg>
+
+    <!-- ===== SUELO DE NIEVE: relieve, sombras azuladas, reflejos y brillitos (main.js) ===== -->
+    <svg class="suelo" id="suelo" viewBox="0 0 848 1200" aria-hidden="true"></svg>
+
+    <!-- ===== RESPLANDOR CÁLIDO DE LA CASA (estado final) ===== -->
+    <div class="resplandor" aria-hidden="true"></div>
 
     <!-- ===== ESCENA 3D (Three.js): casa, muñequitos, regalos, nieve, manga… ===== -->
     <canvas class="escena" id="escena" aria-label="Casita de jengibre de cubitos con cuatro ventanas"></canvas>
 
+    <!-- ===== PISTA INICIAL (se va al primer movimiento) ===== -->
+    <p class="pista" id="pista"><span>Decora las ventanas y los árboles</span> <span>con la manga pastelera</span></p>
+
     <!-- ===== ESTADO FINAL ===== -->
-    <p class="final" id="final">Hay niños que no tienen regalos esta Navidad <span>Con tu ayuda, sí</span></p>
+    <p class="final" id="final"><span class="nieve-tapa" data-nieve aria-hidden="true"></span>Hay niños que no tienen regalos esta Navidad <span class="final__si">Con tu ayuda, sí</span></p>
 
     <!-- ===== PIE (HTML encima del canvas, para que se imprima nítido) ===== -->
     <footer class="pie">
 
-      <!-- Cartelito de galleta clavado en la nieve, con los dos logos -->
+      <!-- Cartel de madera pixelada clavado en la nieve: los dos logos sobre una hoja blanca -->
       <div class="cartelito">
         <div class="cartelito__canto">
-          <div class="cartelito__tabla">
-            <div class="cartelito__logo"><img src="IMG/Logo_Aeitaca.webp" alt="Associació Educativa Ítaca"></div>
-            <div class="cartelito__logo"><img src="IMG/Logo_PlanetaFP.webp" alt="PlanetaFP"></div>
+          <div class="cartelito__tabla" data-madera="h">
+            <div class="cartelito__hoja">
+              <span class="clavo clavo--1" aria-hidden="true"></span><span class="clavo clavo--2" aria-hidden="true"></span>
+              <span class="clavo clavo--3" aria-hidden="true"></span><span class="clavo clavo--4" aria-hidden="true"></span>
+              <div class="cartelito__logo"><img src="IMG/Logo_Aeitaca.webp" alt="Asociación Educativa Ítaca"></div>
+              <div class="cartelito__logo"><img src="IMG/Logo_PlanetaFP.webp" alt="PlanetaFP"></div>
+            </div>
           </div>
+          <span class="nieve-tapa" data-nieve aria-hidden="true"></span>
           <div class="guirnalda" data-arriba="si" aria-hidden="true"></div>
         </div>
-        <div class="cartelito__palito" aria-hidden="true"></div>
+        <div class="cartelito__palito" data-madera="v" aria-hidden="true"></div>
         <p class="cartelito__creditos">
-          <span>Associació Educativa Ítaca · L'Hospitalet</span>
-          <span><small>con la colaboración de</small> PlanetaFP</span>
+          <span class="linea1">Asociación Educativa Ítaca</span>
+          <span class="linea2">con la colaboración de PlanetaFP</span>
         </p>
       </div>
 
-      <!-- Etiqueta de regalo colgada de una cinta, con el QR -->
+      <!-- Cartel colgante de madera pixelada, con el QR: cuelga de dos cadenas de una viga sobre un poste -->
       <div class="etiqueta">
-        <div class="etiqueta__palito" aria-hidden="true"></div>
-        <svg class="etiqueta__lazo" viewBox="0 0 22 16" aria-hidden="true" shape-rendering="crispEdges">
-          <!-- lazo vóxel morado -->
-          <rect x="1" y="1" width="4" height="2" fill="#7b4fa0"/><rect x="0" y="3" width="2" height="3" fill="#7b4fa0"/>
-          <rect x="2" y="3" width="3" height="3" fill="#5e3a7c"/><rect x="1" y="6" width="5" height="2" fill="#7b4fa0"/>
-          <rect x="17" y="1" width="4" height="2" fill="#7b4fa0"/><rect x="20" y="3" width="2" height="3" fill="#7b4fa0"/>
-          <rect x="17" y="3" width="3" height="3" fill="#5e3a7c"/><rect x="16" y="6" width="5" height="2" fill="#7b4fa0"/>
-          <rect x="5" y="3" width="12" height="4" fill="#7b4fa0"/><rect x="9" y="2" width="4" height="6" fill="#8f63b5"/>
-          <rect x="6" y="8" width="3" height="5" fill="#7b4fa0"/><rect x="5" y="12" width="2" height="2" fill="#7b4fa0"/>
-          <rect x="13" y="8" width="3" height="5" fill="#7b4fa0"/><rect x="15" y="12" width="2" height="2" fill="#7b4fa0"/>
-          <!-- cinta que baja hasta la etiqueta -->
-          <rect x="10" y="8" width="2" height="8" fill="#7b4fa0"/>
-        </svg>
+        <div class="etiqueta__poste" data-madera="v" aria-hidden="true"></div>
+        <div class="etiqueta__viga" data-madera="h" aria-hidden="true"><span class="nieve-tapa" data-nieve></span></div>
+        <div class="etiqueta__cadenas" aria-hidden="true"><span class="cadena" data-cadena></span><span class="cadena" data-cadena></span></div>
         <div class="etiqueta__cuerpo">
-          <div class="etiqueta__tarjeta">
-            <span class="etiqueta__agujero" aria-hidden="true"></span>
-            <img class="etiqueta__qr" src="IMG/qr.svg" alt="Código QR para colaborar con la campaña">
+          <div class="etiqueta__tarjeta" data-madera="h">
+            <div class="etiqueta__marco-qr"><img class="etiqueta__qr" src="IMG/qr.svg" alt="Código QR para colaborar con la campaña"></div>
             <p class="etiqueta__texto">Escanéame y ayúdanos a llenarlas</p>
           </div>
+          <span class="nieve-tapa" data-nieve aria-hidden="true"></span>
           <div class="guirnalda" data-arriba="no" aria-hidden="true"></div>
         </div>
       </div>
