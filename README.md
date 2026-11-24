@@ -6,7 +6,7 @@ Cartel interactivo para la campaña de la **Asociación Educativa Ítaca** (L'Ho
 
 ## Concepto
 
-Una casita de jengibre hecha de cubitos (vóxel), con aire de juego de construcción con bloques, bajo un cielo nocturno con aurora boreal. Tiene cuatro ventanas apagadas y en cada una vive un muñequito de jengibre que todavía no tiene regalo. Con el ratón, quien mira el cartel va encendiendo las ventanas y en cada casa aparece un regalo. Así se cuenta la idea de la campaña: *que en cada casa haya un regalo*.
+Una casita de jengibre hecha de cubitos (vóxel), con aire de juego de construcción con bloques, bajo un cielo nocturno con aurora boreal. Tiene cuatro ventanas apagadas y en cada una vive un muñequito de jengibre que todavía no tiene regalo: una galleta tostada con el contorno de glaseado blanco, ojos de chocolate, sonrisa de glaseado, mejillas rosadas, tres botones de gominola (rojo, verde y blanco) y una pajarita roja. Ocupa casi todo el alto de su ventana. Con el ratón, quien mira el cartel va encendiendo las ventanas y en cada casa aparece un regalo. Así se cuenta la idea de la campaña: *que en cada casa haya un regalo*.
 
 Cuando las cuatro ventanas están encendidas, un trineo tirado por dos renos vóxel cruza el cielo por detrás de la casa y se mete por la chimenea (el gorro de Papá Noel que la tapa se levanta para dejarlo entrar). Después salen chispitas y regalitos que caen delante de la valla y aparece el mensaje final:
 
@@ -41,8 +41,8 @@ Abre `index.html` en el navegador con doble clic (funciona como archivo local, s
 
 - **Cielo nocturno en bloques** (aire de juego de cubitos tipo sandbox, sin copiar ninguno): degradado de azul noche (`#0b1230`) a violeta (`#2a1a4a`); aurora boreal pixelada en cortinas verticales de franjas escalonadas (turquesa, morado y un toque de rosa), sin degradados, que ondula muy despacio (lienzo `#cielo`, ampliado sin suavizado); luna cuadrada pixelada de 60 px, blanca con manchitas grises suaves y un halo suave, en el cielo libre a la izquierda de la casa, entre la cinta del eslogan y el tejado; estrellas cuadradas de 2-4 px que titilan; nubes planas de bloques semitransparentes que van y vienen muy despacio; alguna estrella fugaz de píxeles; y colinas en escalones con nieve encima y pinos de bloques de tonos distintos con nieve en los pisos. Al imprimir, todo queda fijo.
 
-- **Casa de jengibre** (inspirada en una construcción de StellaGaming, con su permiso): columnas de bastón de caramelo con rayas en espiral en las esquinas y junto a la puerta; marcos de las ventanas en rojo `#c0283a` con la parte de arriba en arco escalonado y sus perlitas de glaseado; zócalo de piedra gris pixelada con dos escalones hasta la puerta, que siguen en el caminito de piedra.
-- **Gorro de Papá Noel** vóxel sobre la chimenea (rojo con borde blanco y pompón, doblado hacia un lado). Hace de tapa: se levanta e inclina cuando llega el trineo, el trineo entra y vuelve a caer con un pequeño rebote; se levanta un momento con cada regalito que sale y cuando el trineo se va. En el estado final y al imprimir está en su sitio.
+- **Casa de jengibre** (inspirada en una construcción de StellaGaming, con su permiso): columnas de bastón de caramelo con rayas en espiral en las esquinas y junto a la puerta; marcos de las ventanas en rojo `#c0283a` con la parte de arriba en arco escalonado y sus perlitas de glaseado; en cada pared lateral, una ventanita redonda con luz cálida suave y un marco de perlitas blancas (se ve al girar la casa); zócalo de piedra gris pixelada con dos escalones hasta la puerta, que siguen en el caminito de piedra.
+- **Gorro de Papá Noel** vóxel sobre la chimenea: un ala blanca y gruesa, como de pelo, del ancho de la chimenea; encima, la parte roja (unas dos veces más alta que el ala), en cono escalonado que a media altura se dobla hacia un lado; la punta cae por el lateral con el pompón blanco colgando. Hace de tapa: se levanta e inclina cuando llega el trineo, el trineo entra y vuelve a caer con un pequeño rebote; se levanta un momento con cada regalito que sale y cuando el trineo se va. En el estado final y al imprimir está en su sitio.
 - **Suelo de nieve en bloques**: escalones con desniveles, caras y laterales en sombra azulada `#9fc3e6` y textura pixelada; losas de piedra en bloques en el caminito; dos farolas antiguas vóxel casi tan altas como la puerta a los lados del caminito (base de piedra, poste fino de hierro `#2b2b33`, caja de cristal con luz cálida `#ffd27a` y marco oscuro, tejadito en punta con nieve y halo que se refleja en la nieve), dos arbustos nevados y tres bloques de hielo azul claro.
 - **Carteles de madera pixelada** (HTML/CSS, nítidos al imprimir; la madera es una textura propia generada por código como SVG de píxeles, con vetas horizontales en `#8b5a2b`, `#a0703a` y `#6e4520`):
   - Logos: tablón sobre un poste clavado en la nieve, con nieve encima; los dos logos en contenedores idénticos sobre una hoja blanca clavada con cuatro clavitos; los créditos debajo, en Pixelify Sans.
@@ -79,8 +79,8 @@ Las ventanas están dentro de la escena 3D, así que su «entrar» y «salir» s
 - Si pasa por un **abeto**, se le cuelgan **bolitas de Navidad** vóxel (cubitos con las esquinas recortadas para que parezcan redondas, de color sólido rojo, verde, plata, rosa o menta, con un píxel de brillo blanco arriba a la izquierda, un tapón gris y un hilito hasta la rama), repartidas por las ramas (12 por abeto). Al completarlo, la estrella de la punta brilla un momento. También se quedan en el estado final y al imprimir.
 
 ### 2. Entrar en una ventana (*mouseenter*)
-- La ventana **se enciende con luz cálida**, ilumina al muñequito y deja un reflejo en la nieve.
-- La primera vez **aparece su regalo con un saltito**: un osito, un balón, un coche o una caja con lazo. El muñequito salta de alegría.
+- La ventana **se enciende con luz cálida**: un resplandor de fondo, por detrás del muñequito y del regalo, para que conserven sus colores. Deja también un reflejo en la nieve.
+- La primera vez **aparece su regalo con un saltito**: un osito, un balón, un coche o una caja con lazo. El muñequito salta de alegría y después se gira y ladea la cabeza para mirar su regalo.
 
 ### 3. Salir de la ventana (*mouseleave*)
 - La luz **baja a un brillo suave** y el regalo se queda.
@@ -93,6 +93,7 @@ Las ventanas están dentro de la escena 3D, así que su «entrar» y «salir» s
 |---|---|
 | Cielo | `#0b1230` → `#2a1a4a`, aurora `#4fd1c5` / `#7b4fa0` / `#f08aa6` |
 | Galleta / sombras de galleta | `#c9824a` / `#9a5a2c` |
+| Muñequitos de jengibre | `#a8622e` con sombras `#7a4420`, ojos de chocolate `#3b2014` |
 | Nieve del suelo | `#fffaf3` → `#f1f3f8`, sombras de los escalones `#9fc3e6` |
 | Rojo, verde, plata | `#c0283a`, `#2e6b4a`, `#c8ccd4` |
 | Luz de ventanas y farolas | `#ffd27a`, hierro `#2b2b33` |

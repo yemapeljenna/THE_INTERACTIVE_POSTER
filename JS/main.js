@@ -563,6 +563,46 @@
     columnaCaramelo(2, 7, -0.5, 5.5, 4);
   }
 
+  /* --- Ventanita redonda en cada pared lateral (x = ±11): cristal de cubitos con luz cálida suave,
+     un poco hundido en un aro de galleta tostada, y un marco de perlitas de glaseado blanco --- */
+  var OJO_BUEY = { y: 10, z: 0, r: 0.95 };
+  function ponerOjosDeBuey() {
+    var cristal = [], aro = [], az = crearAzar(1111);   // su propio azar: no cambia los tonos del resto de la casa
+    [-1, 1].forEach(function (lado) {
+      var xc = lado * 11.5;                                // cara de fuera de la pared
+      for (var y = OJO_BUEY.y - 1.25 + C / 2; y < OJO_BUEY.y + 1.25; y += C) {
+        for (var z = OJO_BUEY.z - 1.25 + C / 2; z < OJO_BUEY.z + 1.25; z += C) {
+          var d = Math.hypot(y - OJO_BUEY.y, z - OJO_BUEY.z);
+          if (d <= OJO_BUEY.r) {                           // cristal, a ras de pared (se ve hundido entre el aro)
+            var brillo = (y - OJO_BUEY.y) > 0.2 && (z - OJO_BUEY.z) * lado < -0.1;
+            cristal.push({ x: xc + lado * 0.04, y: y, z: z, color: brillo ? '#fff0c4' : COLOR.luz });
+          } else if (d <= OJO_BUEY.r + 0.3) {              // aro de galleta tostada que sobresale
+            aro.push({ x: xc + lado * (C / 2 + 0.1), y: y, z: z, color: new THREE.Color(COLOR.sombra).offsetHSL(0, 0, (az() - 0.5) * 0.05) });
+          }
+        }
+      }
+    });
+    var mallaCristal = crearMallaVoxel(cristal, C);
+    mallaCristal.material.emissive = new THREE.Color(COLOR.luz);
+    mallaCristal.material.emissiveIntensity = 0.55;        // luz cálida suave, siempre encendida
+    casa.add(mallaCristal);
+    casa.add(crearMallaVoxel(aro, C));
+
+    // Marco de perlitas blancas, sobre el aro
+    var N = 14, perlas = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 12, 8),
+      new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x1c1e22, specular: 0x9a9ea6, shininess: 90 }), N * 2);
+    var m = new THREE.Matrix4(), n = 0;
+    [-1, 1].forEach(function (lado) {
+      for (var k = 0; k < N; k++) {
+        var a = k / N * Math.PI * 2, rr = OJO_BUEY.r + 0.17;
+        m.makeScale(0.15, 0.15, 0.15).setPosition(lado * (11.5 + C + 0.15), OJO_BUEY.y + rr * Math.sin(a), OJO_BUEY.z + rr * Math.cos(a));
+        perlas.setMatrixAt(n++, m);
+      }
+    });
+    perlas.instanceMatrix.needsUpdate = true;
+    casa.add(perlas);
+  }
+
   /* --- Arco escalonado encima de cada ventana ---
      El hueco sube una fila y se cierra con un arco: una banda roja (en cubitos, con su lado en sombra)
      entre dos medias elipses; por dentro se ve el cristal, que se enciende con la ventana. */
@@ -735,6 +775,7 @@
   ponerPiruletas();
   ponerCoronaFachada();
   ponerColumnas();
+  ponerOjosDeBuey();
   ponerArcos();
   ponerEscalones();
   ponerFestonTejado();
@@ -744,48 +785,90 @@
   casa.add(crearMallaVoxel(deco, C));
 
   /* --- Gorro de Papá Noel encima de la chimenea ---
-     Vóxel rojo con borde blanco peludo y pompón, doblado hacia la derecha (no sube más de 1,8 cubos:
-     no llega a la cinta del eslogan). Es una tapa: gira sobre una bisagra en su borde izquierdo
-     (actualizarGorro). Cuando llega el trineo se levanta, el trineo entra y vuelve a caer con un rebote;
-     cuando salen los regalos y cuando el trineo se va, se levanta un momento. */
-  var BISAGRA_GORRO = new THREE.Vector3(4.75, 30.5, -2);
+     Ala blanca de pelo, del ancho del remate de la chimenea (5 cubos) y 4 cubitos de alto, con mechones.
+     Encima, la parte roja (unas 2 veces el alto del ala): un cono escalonado que a media altura se dobla
+     hacia la derecha; la punta cae por el lateral y el pompón blanco cuelga junto al ala.
+     Es una tapa: gira sobre una bisagra en el borde izquierdo del ala (actualizarGorro). Cuando llega el
+     trineo se levanta, el trineo entra y vuelve a caer con un rebote; cuando salen los regalos y cuando
+     el trineo se va, se levanta un momento. */
+  var BISAGRA_GORRO = new THREE.Vector3(4.5, 30.5, -2);
   var gorro = { grupo: new THREE.Group(), a: 0, v: 0, objetivo: 0, hasta: -1 };
   (function () {
-    var lista = [], az = crearAzar(1225);
-    function c(x, y, z, color) { lista.push({ x: x, y: y, z: z, color: color }); }
-    var x, y, z, i;
-    // borde peludo blanco: 18 × 18 cubitos y 2 de alto, con bultitos
-    for (x = 4.75 + C / 2; x < 9.25; x += C) {
-      for (z = -4.25 + C / 2; z < 0.25; z += C) {
-        var fuera = x < 5 || x > 9 || z < -4 || z > 0;
-        c(x, 30.5 + C / 2, z, fuera || az() < 0.25 ? COLOR.sombraGlaseado : COLOR.glaseado);
-        if (!fuera || az() < 0.5) c(x, 30.5 + 1.5 * C, z, az() < 0.15 ? COLOR.sombraGlaseado : COLOR.glaseado);
-      }
-    }
-    // cuerpo rojo: 5 capas que se estrechan y se doblan hacia la derecha
-    for (var capa = 0; capa < 5; capa++) {
-      var r = 1.95 - capa * 0.33, desvio = 0.1 * capa * capa;
-      var cx = 7 + desvio, yC = 31 + (capa + 0.5) * C;
-      for (x = cx - r + C / 2; x < cx + r; x += C) {
-        for (z = -2 - r + C / 2; z < -2 + r; z += C) {
-          var ladoSombra = x > cx + r * 0.35 || z < -2 - r * 0.6;
-          c(x, yC, z, ladoSombra ? ROJO_OSCURO : COLOR.rojo);
+    var celdas = {}, az = crearAzar(1225);
+    var CX = 7, CZ = -2, Y0 = 30.5;                         // eje de la chimenea y base del gorro
+    function clave(x, y, z) { return Math.round(x / C) + ',' + Math.round(y / C) + ',' + Math.round(z / C); }
+    function c(x, y, z, color) { celdas[clave(x, y, z)] = { x: x, y: y, z: z, color: color }; }
+    function pelo() { return az() < 0.3 ? COLOR.sombraGlaseado : COLOR.glaseado; }
+    var x, y, z, k, i;
+
+    // Ala de pelo: 5 × 5 cubos con las esquinas redondeadas y 4 cubitos de alto; mechones sueltos por fuera y arriba
+    for (x = 4.5 + C / 2; x < 9.5; x += C) {
+      for (z = -4.5 + C / 2; z < 0.5; z += C) {
+        var ex = Math.max(0, Math.abs(x - CX) - 2), ez = Math.max(0, Math.abs(z - CZ) - 2);
+        if (ex * ex + ez * ez > 0.25) continue;
+        var borde = Math.abs(x - CX) > 2.2 || Math.abs(z - CZ) > 2.2;
+        for (k = 0; k < 4; k++) {
+          if (borde && (k === 0 || k === 3) && az() < 0.35) continue;      // borde mullido, no de caja
+          c(x, Y0 + (k + 0.5) * C, z, k === 0 ? COLOR.sombraGlaseado : pelo());
+        }
+        if (az() < 0.22) c(x, Y0 + 4.5 * C, z, pelo());                    // mechones por arriba
+        if (borde && az() < 0.3) {                                          // mechones hacia fuera
+          var fx = Math.abs(x - CX) > 2.2 ? Math.sign(x - CX) * C : 0;
+          var fz = Math.abs(z - CZ) > 2.2 ? Math.sign(z - CZ) * C : 0;
+          c(x + fx, Y0 + (1.5 + Math.floor(az() * 2)) * C, z + fz, pelo());
         }
       }
     }
-    // punta que cae hacia la derecha
-    [[8.95, 32.05], [9.35, 31.9], [9.65, 31.7]].forEach(function (p) {
-      for (i = -1; i <= 0; i++) for (var k = -1; k <= 0; k++) c(p[0] + (i + 0.5) * C, p[1], -2 + (k + 0.5) * C, k === 0 ? COLOR.rojo : ROJO_OSCURO);
+
+    // Parte roja: cono escalonado (dos peldaños) y, desde media altura, un tubo que se dobla hacia la derecha
+    // y cae por el lateral (curvas de Bézier con el radio menguando hacia la punta)
+    function bez(p, q, r, t) {
+      return [(1 - t) * (1 - t) * p[0] + 2 * (1 - t) * t * q[0] + t * t * r[0], (1 - t) * (1 - t) * p[1] + 2 * (1 - t) * t * q[1] + t * t * r[1]];
+    }
+    var muestras = [];
+    for (i = 0; i <= 40; i++) { var p1 = bez([7, 32.3], [7.2, 33.05], [8.7, 32.95], i / 40); muestras.push([p1[0], p1[1], 1.15 - 0.55 * i / 40]); }
+    for (i = 1; i <= 30; i++) { var p2 = bez([8.7, 32.95], [10.05, 32.9], [10.5, 31.6], i / 30); muestras.push([p2[0], p2[1], 0.6 - 0.28 * i / 30]); }
+    for (x = 4.5 + C / 2; x < 11.2; x += C) {
+      for (y = Y0 + 4 * C + C / 2; y < 34.4; y += C) {
+        for (z = -4.5 + C / 2; z < 0.5; z += C) {
+          var dz = z - CZ, centro = null, radio = 0;
+          if (y < 32.5) {                                                   // peldaños del cono
+            radio = y < 32 ? 1.95 : 1.6;
+            if ((x - CX) * (x - CX) + dz * dz <= radio * radio) centro = [CX, y];
+          }
+          for (var m = 0; !centro && m < muestras.length; m++) {
+            var s = muestras[m], dx = x - s[0], dy = y - s[1];
+            if (dx * dx + dy * dy + dz * dz <= s[2] * s[2]) { centro = s; radio = s[2]; }
+          }
+          if (!centro) continue;
+          // sombra en el lado de abajo a la derecha y atrás; un brillo arriba a la izquierda
+          var sombra = (x - centro[0]) > radio * 0.4 || dz < -radio * 0.55 || (y - centro[1]) < -radio * 0.6;
+          var brillo = (x - centro[0]) < -radio * 0.45 && (y - centro[1]) > 0 && dz > 0;
+          c(x, y, z, sombra ? ROJO_OSCURO : (brillo ? '#d4404f' : COLOR.rojo));
+        }
+      }
+    }
+
+    // Pompón blanco colgando junto al ala, con algún mechón
+    for (x = 9.7; x < 11.5; x += C) {
+      for (y = 29.9; y < 31.7; y += C) {
+        for (z = -3.1; z < -0.9; z += C) {
+          var px = x - 10.6, py = y - 30.85, pz = z - CZ, d2 = px * px + py * py + pz * pz;
+          if (d2 > 0.66 * 0.66 || (d2 > 0.5 * 0.5 && az() < 0.3)) continue;
+          c(x, y, z, (px > 0.25 || py < -0.3) ? COLOR.sombraGlaseado : COLOR.glaseado);
+        }
+      }
+    }
+
+    // Fuera los cubitos que no se ven (rodeados por los 6 lados)
+    var lista = [];
+    Object.keys(celdas).forEach(function (kk) {
+      var b = celdas[kk], t = kk.split(',').map(Number), tapado = true;
+      [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach(function (o) {
+        if (!celdas[(t[0] + o[0]) + ',' + (t[1] + o[1]) + ',' + (t[2] + o[2])]) tapado = false;
+      });
+      if (!tapado) lista.push(b);
     });
-    // pompón blanco
-    for (x = -2; x <= 2; x++) {
-      for (y = -2; y <= 2; y++) {
-        for (z = -2; z <= 2; z++) {
-          if (x * x + y * y + z * z > 5) continue;
-          c(10.0 + x * C * 0.9, 31.45 + y * C * 0.9, -2 + z * C * 0.9, x + y < -1 ? COLOR.glaseado : (x - y > 2 ? COLOR.sombraGlaseado : COLOR.glaseado));
-        }
-      }
-    }
     var malla = crearMallaVoxel(lista, C);
     malla.position.copy(BISAGRA_GORRO).negate();
     gorro.grupo.position.copy(BISAGRA_GORRO);
@@ -1081,22 +1164,87 @@
   }
   function galleta() { return variar(COLOR.galleta, 0.06); }
 
-  /* --- Muñequito de jengibre (9 × 12 cubitos, 2 de grosor) --- */
-  function crearMuneco(boton) {
-    return mallaPequena(deFilas([
-      '..XXXXX..',
-      '..XoXoX..',
-      '..XXXXX..',
-      '..XmmmX..',
-      '...XXX...',
-      'XXXXXXXXX',
-      'gXXXbXXXg',
-      '...XXX...',
-      '..XXbXX..',
-      '..XX.XX..',
-      '..XX.XX..',
-      '..gg.gg..'
-    ], { X: galleta, o: COLOR.glaseado, m: COLOR.glaseado, g: COLOR.glaseado, b: boton }, 'X', 2));
+  /* --- Muñequito de jengibre (19 × 24 cubitos finos; casi todo el alto de la ventana) ---
+     Galleta tostada de 3 cubitos de grosor, con el canto más horneado. Por delante, en relieve, el
+     contorno de glaseado blanco siguiendo el borde (a un cubito del canto, como en las galletas de verdad),
+     ojos de chocolate, sonrisa de glaseado, mejillas rosadas, tres botones de gominola y pajarita roja.
+     La cabeza va aparte (userData.cabeza), con su eje en el cuello: así puede girarse a mirar el regalo. */
+  var S_MUNECO = 0.165;                    // 24 filas × 0,165 ≈ 3,96: el hueco mide 4 (más el arco)
+  var GALLETA_TOSTADA = '#a8622e', GALLETA_SOMBRA = '#7a4420', CHOCOLATE = '#3b2014';
+  function formaMuneco(x, y) {
+    function capsula(px, py, ax, ay, bx, by, r) {
+      var dx = bx - ax, dy = by - ay, t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
+      var ex = px - ax - t * dx, ey = py - ay - t * dy;
+      return ex * ex + ey * ey <= r * r;
+    }
+    var ax = Math.abs(x);
+    return x * x + (y - 19.8) * (y - 19.8) <= 5.15 * 5.15 ||          // cabeza
+      (ax <= 3.4 && y >= 7 && y <= 14.6) ||                             // cuerpo
+      (ax <= 1.6 && y >= 14 && y <= 16) ||                              // cuello
+      capsula(ax, y, 3, 13.4, 7.2, 11.6, 2.4) ||                        // brazos
+      capsula(ax, y, 1.9, 7.5, 3.3, 2.9, 2.5);                          // piernas
+  }
+  function crearMuneco() {
+    var W = 10, H = 25, x, y, z;
+    // distancia al borde (en cubitos): 1 = canto, 2 = donde va el contorno de glaseado
+    var dist = {}, cola = [];
+    function k(a, b) { return a + ',' + b; }
+    for (y = -1; y <= H + 1; y++) for (x = -W - 1; x <= W + 1; x++) {
+      if (!formaMuneco(x, y)) { dist[k(x, y)] = 0; cola.push([x, y]); }
+    }
+    for (var n = 0; n < cola.length; n++) {
+      var p = cola[n];
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (o) {
+        var qx = p[0] + o[0], qy = p[1] + o[1], q = k(qx, qy);
+        if (dist[q] === undefined && Math.abs(qx) <= W && qy >= 0 && qy <= H) { dist[q] = dist[k(p[0], p[1])] + 1; cola.push([qx, qy]); }
+      });
+    }
+    var celdas = {};
+    function c(cx, cy, cz, color) { celdas[cx + ',' + cy + ',' + cz] = { x: cx, y: cy, z: cz, color: color }; }
+    // galleta: 3 capas (z 0…2); el canto y las capas de atrás, más tostados
+    for (y = 0; y <= H; y++) for (x = -W; x <= W; x++) {
+      var d = dist[k(x, y)];
+      if (!d) continue;
+      for (z = 0; z <= 2; z++) {
+        var horneado = d === 1 || z === 0;
+        c(x, y, z, variar(horneado ? GALLETA_SOMBRA : GALLETA_TOSTADA, 0.05));
+      }
+      if (d === 2) c(x, y, 3, COLOR.glaseado);                          // contorno de glaseado, en relieve
+    }
+    // cara: ojos de chocolate, mejillas rosadas y sonrisa de glaseado
+    [[-2, 21], [-2, 22], [2, 21], [2, 22]].forEach(function (o) { c(o[0], o[1], 3, CHOCOLATE); });
+    [[-3, 19], [3, 19]].forEach(function (o) { c(o[0], o[1], 3, COLOR.rosa); });
+    [[-2, 18], [-1, 17], [0, 17], [1, 17], [2, 18]].forEach(function (o) { c(o[0], o[1], 3, COLOR.glaseado); });
+    // pajarita roja al cuello (lazos que se abren hacia fuera y nudo en medio)
+    [[-2, 14], [-2, 15], [-2, 16], [-1, 15], [1, 15], [2, 14], [2, 15], [2, 16]].forEach(function (o) { c(o[0], o[1], 3, COLOR.rojo); });
+    c(0, 15, 3, ROJO_OSCURO); c(0, 15, 4, COLOR.rojo);
+    // tres botones de gominola (rojo, verde y blanco), abombados
+    [[12, COLOR.rojo], [10, COLOR.verdeClaro], [8, COLOR.glaseado]].forEach(function (b) {
+      c(-1, b[0], 3, b[1]); c(0, b[0], 3, b[1]); c(1, b[0], 3, b[1]); c(0, b[0], 4, b[1]);
+    });
+
+    // a coordenadas: pies en y = 0, centrado en x; la cabeza (y ≥ 17) en su propio grupo con el eje en el cuello
+    var CUELLO = 16.5;
+    var cuerpo = [], cabeza = [];
+    Object.keys(celdas).forEach(function (kk) {
+      var b = celdas[kk];
+      var arriba = b.y >= 17;
+      (arriba ? cabeza : cuerpo).push({
+        x: b.x * S_MUNECO,
+        y: arriba ? (b.y - CUELLO) * S_MUNECO : (b.y - 0.5) * S_MUNECO,
+        z: (b.z - 1.5) * S_MUNECO,
+        color: b.color
+      });
+    });
+    var grupo = new THREE.Group();
+    grupo.add(crearMallaVoxel(cuerpo, S_MUNECO));
+    var grupoCabeza = new THREE.Group();
+    grupoCabeza.position.y = (CUELLO - 0.5) * S_MUNECO;
+    grupoCabeza.add(crearMallaVoxel(cabeza, S_MUNECO));
+    grupo.add(grupoCabeza);
+    grupo.userData.ancho = (2 * 9 + 1) * S_MUNECO;
+    grupo.userData.cabeza = grupoCabeza;
+    return grupo;
   }
 
   /* --- Regalo 1: osito con bufanda roja y verde --- */
@@ -1195,6 +1343,19 @@
     return new THREE.CanvasTexture(cv);
   }
   var TEXTURA_HALO = texturaHalo();
+  /* El mismo halo con el hueco de la ventana (5 × 5 con el arco, en un plano de 15 × 14) borrado con borde suave:
+     la luz se derrama por la fachada, pero no cae encima del muñequito ni del regalo */
+  var TEXTURA_HALO_MARCO = (function () {
+    var t = texturaHalo(), g = t.image.getContext('2d');
+    var ux = 128 / 15, uy = 128 / 14;
+    g.globalCompositeOperation = 'destination-out';
+    g.shadowColor = 'rgba(0, 0, 0, 1)';
+    g.shadowBlur = 6;
+    g.fillStyle = '#000';
+    g.fillRect(64 - 2.5 * ux, 64 - 3 * uy, 5 * ux, 5 * uy);
+    t.needsUpdate = true;
+    return t;
+  })();
 
   /* Brillo cálido suave alrededor de las campanas (más intenso en el estado final) */
   var haloCampanas = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -1223,30 +1384,48 @@
     cristal.position.set(cx, cy + 0.5, 4);
     casa.add(cristal);
 
-    // Luz cálida que ilumina al muñequito y al regalo
-    var luz = new THREE.PointLight(0xffc06a, 0, 9, 2);
-    luz.position.set(cx, cy + 0.5, 7.2);
+    // Luz cálida DETRÁS de las figuras (entre el cristal y ellas): las recorta a contraluz y calienta el hueco,
+    // sin lavar sus colores por delante
+    var luz = new THREE.PointLight(0xffc06a, 0, 6, 2);
+    luz.position.set(cx, cy + 0.8, 4.95);
     casa.add(luz);
 
-    // Halo suave por fuera de la ventana
+    // Resplandor de fondo: sobre el cristal, por detrás del muñequito y del regalo (los tapan ellos)
+    var fondo = new THREE.Mesh(
+      new THREE.PlaneGeometry(ancho + 3, alto + 4),
+      new THREE.MeshBasicMaterial({ map: TEXTURA_HALO, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })
+    );
+    fondo.position.set(cx, cy + 0.5, 4.55);
+    casa.add(fondo);
+
+    // Halo suave por fuera de la ventana: con el hueco recortado, para no pasar por encima de las figuras
     var halo = new THREE.Mesh(
       new THREE.PlaneGeometry(ancho + 10, alto + 10),
-      new THREE.MeshBasicMaterial({ map: TEXTURA_HALO, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ map: TEXTURA_HALO_MARCO, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })
     );
     halo.position.set(cx, cy, 7.7);
     casa.add(halo);
 
-    // Muñequito de jengibre, mirando un poco hacia su regalo
-    var muneco = crearMuneco(i % 2 === 0 ? COLOR.rojo : COLOR.verdeClaro);
-    var mx = espejo ? derecha - 0.2 - muneco.userData.ancho / 2 : izquierda + 0.2 + muneco.userData.ancho / 2;
-    muneco.position.set(mx, suelo, Z_FIGURAS);
-    muneco.rotation.y = espejo ? -0.3 : 0.3;
+    // Muñequito de jengibre, mirando un poco hacia su regalo (tras el saltito, se gira a mirarlo)
+    var hacia = espejo ? -1 : 1;           // lado del regalo: +1 a la derecha, −1 a la izquierda
+    var muneco = crearMuneco();
+    // girado 0,3, el brazo de fuera queda a ~0,95 de su medio ancho: lo pegamos al marco sin que lo atraviese
+    var medio = muneco.userData.ancho / 2 * 0.96;
+    var mx = espejo ? derecha - 0.08 - medio : izquierda + 0.08 + medio;
+    muneco.position.set(mx, suelo, Z_FIGURAS - 0.1);
+    muneco.rotation.y = 0.3 * hacia;
     casa.add(muneco);
 
-    // Regalo: escondido (escala 0) hasta que se enciende la ventana
-    var regalo = FABRICAS_REGALO[i]();
-    var rx = espejo ? izquierda + 0.25 + regalo.userData.ancho / 2 : derecha - 0.25 - regalo.userData.ancho / 2;
-    regalo.position.set(rx, suelo, Z_FIGURAS);
+    // Regalo: escondido (escala 0) hasta que se enciende la ventana. Con el muñequito más grande, queda
+    // ~1,75 de hueco a su lado: el regalo se encoge lo justo para caber (va un poco más adelante que él)
+    var juguete = FABRICAS_REGALO[i]();
+    var cabe = Math.min(1, 1.75 / juguete.userData.ancho);
+    juguete.scale.setScalar(cabe);
+    var regalo = new THREE.Group();
+    regalo.add(juguete);
+    var mitadRegalo = juguete.userData.ancho * cabe / 2;
+    var rx = espejo ? izquierda + 0.12 + mitadRegalo : derecha - 0.12 - mitadRegalo;
+    regalo.position.set(rx, suelo, Z_FIGURAS + 0.3);
     regalo.rotation.y = espejo ? 0.35 : -0.35;
     regalo.scale.setScalar(0.001);
     regalo.visible = false;
@@ -1260,8 +1439,8 @@
     zonasVentana.push(zona);
 
     ventanas.push({
-      cristal: cristal, luz: luz, halo: halo, muneco: muneco, regalo: regalo,
-      sueloMuneco: suelo, estado: 'apagada', brillo: 0, objetivo: 0, saltoDesde: -1, destello: -1
+      cristal: cristal, luz: luz, fondo: fondo, halo: halo, muneco: muneco, regalo: regalo, hacia: hacia,
+      sueloMuneco: suelo, estado: 'apagada', brillo: 0, objetivo: 0, saltoDesde: -1, destello: -1, mira: 0, miraDesde: -1
     });
   });
 
@@ -1308,10 +1487,23 @@
         if (ud < 1) extra = Math.sin(Math.PI * ud);
         else v.destello = -1;
       }
-      v.cristal.material.emissiveIntensity = v.brillo * 0.8 + extra * 0.7;
-      v.luz.intensity = v.brillo * 0.9 + extra * 1.2;
-      v.halo.material.opacity = v.brillo * 0.45 + extra * 0.35;
+      v.cristal.material.emissiveIntensity = v.brillo * 0.62 + extra * 0.55;
+      v.luz.intensity = v.brillo * 0.55 + extra * 0.8;
+      v.fondo.material.opacity = v.brillo * 0.5 + extra * 0.3;
+      v.halo.material.opacity = v.brillo * 0.34 + extra * 0.3;
       if (reflejos[i]) reflejos[i].el.setAttribute('opacity', (v.brillo * reflejos[i].fuerza).toFixed(3));   // reflejo en la nieve
+
+      // Después del saltito, el muñequito se gira hacia su regalo y ladea la cabeza para mirarlo
+      if (v.miraDesde >= 0 && v.mira < 1) {
+        var um = Math.min(1, (ahora - v.miraDesde) / 0.7);
+        v.mira = movimientoReducido ? 1 : 1 - Math.pow(1 - um, 3);
+        if (um >= 1) v.mira = 1;
+        var cab = v.muneco.userData.cabeza;
+        v.muneco.rotation.y = v.hacia * (0.3 + 0.3 * v.mira);
+        cab.rotation.y = v.hacia * 0.35 * v.mira;
+        cab.rotation.z = -v.hacia * 0.16 * v.mira;
+        cab.rotation.x = 0.12 * v.mira;                          // un poco hacia abajo: el regalo es bajito
+      }
 
       if (v.saltoDesde < 0) return;
       var u = (ahora - v.saltoDesde) / 0.75;                     // 0,75 s de saltito
@@ -1320,11 +1512,12 @@
       var aplasta = (u > 0.62 && u < 0.78) ? 0.12 : 0;           // al tocar el suelo
       v.regalo.scale.set(escala * (1 + aplasta), Math.max(0.001, escala * (1 - aplasta)), escala * (1 + aplasta));
       v.regalo.position.y = v.sueloMuneco + curvaSalto(u, 1.1);
-      v.muneco.position.y = v.sueloMuneco + curvaSalto(u - 0.12, 0.45);   // el muñequito salta de alegría
+      v.muneco.position.y = v.sueloMuneco + curvaSalto(u - 0.12, 0.38);   // el muñequito salta de alegría
       if (u >= 1.15) {
         v.regalo.scale.setScalar(1);
         v.regalo.position.y = v.muneco.position.y = v.sueloMuneco;
         v.saltoDesde = -1;
+        v.miraDesde = ahora;                                      // ahora, a mirar el regalo
       }
     });
   }

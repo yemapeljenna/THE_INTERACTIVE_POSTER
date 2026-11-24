@@ -629,7 +629,7 @@ body {
   right: 0;
   top: 28rem;
   height: 70rem;
-  background: radial-gradient(ellipse 44% 46% at 50% 52%, rgba(255, 200, 112, 0.34), rgba(255, 170, 80, 0.12) 55%, rgba(255, 170, 80, 0) 75%);
+  background: radial-gradient(ellipse 44% 46% at 50% 52%, rgba(255, 200, 112, 0.27), rgba(255, 170, 80, 0.09) 55%, rgba(255, 170, 80, 0) 75%);
   opacity: 0;
   transition: opacity 2s ease;
   pointer-events: none;
