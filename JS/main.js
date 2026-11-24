@@ -1166,7 +1166,7 @@
 
   /* --- Muñequito de jengibre (19 × 24 cubitos finos; casi todo el alto de la ventana) ---
      Galleta tostada de 3 cubitos de grosor, con el canto más horneado. Por delante, en relieve, el
-     contorno de glaseado blanco siguiendo el borde (a un cubito del canto, como en las galletas de verdad),
+     contorno fino de glaseado blanco (1 cubito, solo en el borde de fuera: se ve bien la galleta),
      ojos de chocolate, sonrisa de glaseado, mejillas rosadas, tres botones de gominola y pajarita roja.
      La cabeza va aparte (userData.cabeza), con su eje en el cuello: así puede girarse a mirar el regalo. */
   var S_MUNECO = 0.165;                    // 24 filas × 0,165 ≈ 3,96: el hueco mide 4 (más el arco)
@@ -1186,7 +1186,7 @@
   }
   function crearMuneco() {
     var W = 10, H = 25, x, y, z;
-    // distancia al borde (en cubitos): 1 = canto, 2 = donde va el contorno de glaseado
+    // distancia al borde (en cubitos): 1 = canto, donde va el contorno de glaseado
     var dist = {}, cola = [];
     function k(a, b) { return a + ',' + b; }
     for (y = -1; y <= H + 1; y++) for (x = -W - 1; x <= W + 1; x++) {
@@ -1206,10 +1206,10 @@
       var d = dist[k(x, y)];
       if (!d) continue;
       for (z = 0; z <= 2; z++) {
-        var horneado = d === 1 || z === 0;
+        var horneado = z === 0;                                       // la capa de atrás, más tostada
         c(x, y, z, variar(horneado ? GALLETA_SOMBRA : GALLETA_TOSTADA, 0.05));
       }
-      if (d === 2) c(x, y, 3, COLOR.glaseado);                          // contorno de glaseado, en relieve
+      if (d === 1) c(x, y, 3, COLOR.glaseado);                          // contorno de glaseado, en relieve sobre el canto
     }
     // cara: ojos de chocolate, mejillas rosadas y sonrisa de glaseado
     [[-2, 21], [-2, 22], [2, 21], [2, 22]].forEach(function (o) { c(o[0], o[1], 3, CHOCOLATE); });
@@ -1487,9 +1487,9 @@
         if (ud < 1) extra = Math.sin(Math.PI * ud);
         else v.destello = -1;
       }
-      v.cristal.material.emissiveIntensity = v.brillo * 0.62 + extra * 0.55;
+      v.cristal.material.emissiveIntensity = v.brillo * 0.5 + extra * 0.5;
       v.luz.intensity = v.brillo * 0.55 + extra * 0.8;
-      v.fondo.material.opacity = v.brillo * 0.5 + extra * 0.3;
+      v.fondo.material.opacity = v.brillo * 0.28 + extra * 0.25;   // más tenue: no se come la silueta de las figuras
       v.halo.material.opacity = v.brillo * 0.34 + extra * 0.3;
       if (reflejos[i]) reflejos[i].el.setAttribute('opacity', (v.brillo * reflejos[i].fuerza).toFixed(3));   // reflejo en la nieve
 
